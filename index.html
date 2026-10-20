@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080d19">
+<title>Zyvro AI — AI Video Generator</title>
+<style>
+:root{
+  --bg:#070b15;--card:#0d1424;--card2:#111a2d;--text:#f6f7fb;--muted:#aab4c8;
+  --line:#24304a;--accent:#8b5cf6;--accent2:#2495ff;--good:#27d69a;--danger:#ff6b7a;
+}
+*{box-sizing:border-box} body{margin:0;background:radial-gradient(circle at 70% 10%,#17103a 0,#070b15 38%),var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+button,input,textarea,select{font:inherit} button{cursor:pointer}
+.wrap{max-width:1180px;margin:auto;padding:22px}
+nav{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:58px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.4px}.z{width:36px;height:36px;border-radius:11px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;font-weight:900}
+.navlinks{display:flex;gap:22px;color:var(--muted);font-size:14px}.navlinks a{color:inherit;text-decoration:none}
+.actions{display:flex;gap:9px;align-items:center}.plan-pill{display:none;border:1px solid #3b315f;background:#17112b;color:#d8ccff;padding:8px 10px;border-radius:10px;font-size:12px;font-weight:700}.account-pill{display:none;border:1px solid var(--line);background:#10182a;color:#dbe4f5;padding:9px 12px;border-radius:12px;font-size:13px;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.auth-modal{display:none;position:fixed;inset:0;background:#0009;backdrop-filter:blur(8px);z-index:20;align-items:center;justify-content:center;padding:18px}.auth-modal.show{display:flex}.auth-card{width:min(430px,100%);background:#0d1424;border:1px solid #2b3854;border-radius:22px;padding:22px;box-shadow:0 30px 80px #000b}.auth-card h3{margin:0 0 6px;font-size:25px}.auth-card p{margin:0 0 18px;color:var(--muted);font-size:13px}.auth-card input{width:100%;margin:7px 0;background:#090f1c;color:#fff;border:1px solid #273550;border-radius:12px;padding:12px;outline:none}.auth-actions{display:flex;gap:8px;margin-top:10px}.auth-actions button{flex:1}.auth-close{float:right;background:transparent;border:0;color:#9eabc0;font-size:22px}.auth-switch{margin-top:13px;text-align:center;color:#9eabc0;font-size:12px}.auth-switch button{background:none;border:0;color:#a78bfa}.auth-error{color:var(--danger);font-size:12px;min-height:18px;margin-top:5px}.ghost,.primary{border:1px solid var(--line);background:#0c1322;color:var(--text);padding:10px 15px;border-radius:12px}.primary{border:0;background:linear-gradient(135deg,var(--accent),var(--accent2));font-weight:700}
+.hero{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center}
+.badge{display:inline-flex;padding:7px 11px;border:1px solid #34365c;border-radius:999px;background:#11142b;color:#c8c4ff;font-size:12px}
+h1{font-size:clamp(42px,6vw,72px);line-height:.98;margin:17px 0 18px;letter-spacing:-3px}.grad{background:linear-gradient(90deg,#fff,#a78bfa,#60a5fa);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{font-size:17px;color:var(--muted);line-height:1.6;max-width:610px}
+.builder{margin-top:28px;background:rgba(13,20,36,.92);border:1px solid var(--line);border-radius:22px;padding:15px;box-shadow:0 18px 50px #0005}
+.tabs{display:flex;gap:7px;margin-bottom:12px}.tab{border:1px solid transparent;background:transparent;color:var(--muted);padding:9px 12px;border-radius:10px}.tab.active{background:#1a1830;color:#fff;border-color:#39355d}
+textarea{width:100%;min-height:120px;resize:vertical;background:#090f1c;color:#fff;border:1px solid #222e47;border-radius:15px;padding:15px;outline:none}
+.row{display:flex;gap:10px;align-items:center;margin-top:11px;flex-wrap:wrap}.row>*{flex:1}.generate{min-width:170px;padding:13px 16px;border:0;border-radius:13px;color:#fff;background:linear-gradient(135deg,var(--accent),var(--accent2));font-weight:800}
+.examples{display:flex;gap:7px;flex-wrap:wrap;margin-top:11px}.chip{border:1px solid var(--line);background:#0a1120;color:#aeb9ce;padding:7px 9px;border-radius:999px;font-size:12px}
+.hero-art{min-height:430px;border-radius:30px;border:1px solid #293451;background:linear-gradient(145deg,#15122c,#0b1424);display:grid;place-items:center;position:relative;overflow:hidden}
+.hero-art:before{content:"";position:absolute;width:320px;height:320px;border-radius:50%;background:#7c3aed33;filter:blur(55px);top:-70px;right:-40px}
+.preview{width:72%;aspect-ratio:9/14;border-radius:22px;background:linear-gradient(145deg,#273b5f,#0b1020);border:1px solid #465477;display:flex;align-items:flex-end;padding:18px;position:relative;z-index:1;box-shadow:0 25px 60px #0008}
+.preview .play{width:62px;height:62px;border-radius:50%;background:#ffffffdd;color:#111;display:grid;place-items:center;margin:auto;font-size:22px}.preview small{position:absolute;right:12px;bottom:12px;background:#0009;padding:5px 8px;border-radius:8px}
+.sidecard{position:absolute;background:#10182a;border:1px solid #33415e;border-radius:15px;padding:10px;font-size:12px;color:#c7d1e4;z-index:2}.one{top:35px;left:24px}.two{right:22px;bottom:42px}
+.section{margin-top:75px}.section h2{margin:0 0 8px;font-size:28px}.muted{color:var(--muted)}
+.features{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:18px}.feature,.history,.pro{background:rgba(13,20,36,.86);border:1px solid var(--line);border-radius:18px;padding:18px}
+.feature b{display:block;margin-bottom:7px}.feature p{font-size:13px;color:var(--muted);line-height:1.5;margin:0}
+.controls{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}.control{background:#0a1120;border:1px solid var(--line);color:#dbe4f5;padding:10px;border-radius:10px}.control label{display:block;font-size:11px;color:var(--muted);margin-bottom:5px}.control select,.control input{background:transparent;border:0;color:#fff;outline:none}
+.imagebox{display:none;margin-top:10px}.imagebox.show{display:block}.imagebox input{width:100%;color:var(--muted)}
+.status{margin-top:12px;color:#b9c5d9;font-size:13px;min-height:20px}.status.good{color:var(--good)}.status.bad{color:var(--danger)}
+.ad-slot{display:none;margin-top:14px;padding:12px;border:1px dashed #35415a;border-radius:13px;background:#0a1120;color:#8794ab;font-size:12px;text-align:center}.ad-slot.show{display:block}.planbar{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-bottom:12px;padding:10px 12px;border:1px solid var(--line);border-radius:13px;background:#0a1120;font-size:12px;color:#aeb9ce}.pro-btn{border:0;border-radius:9px;padding:7px 10px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-weight:700}.video-result{display:none;margin-top:16px;border-radius:18px;overflow:hidden;border:1px solid var(--line);background:#050912}.video-result.show{display:block}.video-result video{width:100%;display:block;max-height:600px;background:#000}.download{display:inline-block;margin:10px 0 10px 10px;text-decoration:none;color:#fff;background:#18233a;padding:9px 12px;border-radius:10px;font-size:13px}
+.history-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:15px}.history{min-height:90px}.history-title{font-weight:700}.history-meta{font-size:12px;color:var(--muted);margin-top:6px}
+footer{padding:50px 0 20px;color:#68748b;font-size:12px;text-align:center}
+@media(max-width:850px){.hero{grid-template-columns:1fr}.hero-art{min-height:330px}.features{grid-template-columns:1fr 1fr}.navlinks{display:none}}
+@media(max-width:520px){.wrap{padding:15px}nav{margin-bottom:38px}.actions .ghost{display:none}h1{letter-spacing:-2px}.features,.history-grid{grid-template-columns:1fr}.preview{width:60%}.row{flex-direction:column;align-items:stretch}.generate{width:100%}}
+
+body[data-light="1"]{--bg:#f5f7fb;--card:#fff;--card2:#f0f3f9;--text:#111827;--muted:#667085;--line:#d8deea;background:radial-gradient(circle at 70% 0,#ede9fe 0,#f5f7fb 42%),var(--bg)}
+body[data-light="1"] .builder,body[data-light="1"] .feature,body[data-light="1"] .history,body[data-light="1"] .pro{background:#ffffffdd}body[data-light="1"] textarea,body[data-light="1"] .control,body[data-light="1"] .chip,body[data-light="1"] .ad-slot,body[data-light="1"] .planbar{background:#f8fafc;color:#111827}body[data-light="1"] .control select{color:#111827}body[data-light="1"] .control select option{color:#111827;background:#fff}body[data-light="1"] .auth-card{background:#fff}body[data-light="1"] .auth-card input{background:#f8fafc;color:#111827}body[data-light="1"] .hero-art{background:linear-gradient(145deg,#eef2ff,#f8fafc)}
+.planbar{position:relative;overflow:hidden}.planbar:after{content:"";position:absolute;left:0;bottom:0;height:2px;width:var(--usage,0%);background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .35s ease}.dashboard-grid{display:grid;grid-template-columns:1.4fr .6fr;gap:10px;margin-top:15px}.dash-card{background:rgba(13,20,36,.86);border:1px solid var(--line);border-radius:18px;padding:18px}.dash-card h3{margin:0 0 6px}.dash-big{font-size:30px;font-weight:850;margin:10px 0 4px}.mini{font-size:12px;color:var(--muted)}.history{transition:transform .18s,border-color .18s}.history:hover{transform:translateY(-2px);border-color:#475577}.history-meta a{color:#a78bfa;text-decoration:none}.empty{padding:25px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:16px;grid-column:1/-1}
+@media(max-width:850px){.dashboard-grid{grid-template-columns:1fr}}
+</style>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</head>
+<body>
+<div class="wrap">
+<nav>
+  <div class="brand"><div class="z">Z</div><span>ZYVRO AI</span></div>
+  <div class="navlinks"><a href="#">Home</a><a href="#examples">Explore</a><a href="#pricing">Pricing</a><a href="#about">About</a></div>
+  <div class="actions"><button class="ghost" id="themeBtn">☾</button><span class="account-pill" id="accountPill"></span><button class="ghost" id="loginBtn">Log in</button><button class="primary" id="signupBtn">Sign up</button></div>
+</nav>
+
+<section class="hero">
+  <div>
+    <span class="badge">✨ AI Video Generator</span>
+    <h1>Turn your imagination<br><span class="grad">into video.</span></h1>
+    <p class="sub">Create videos from text or images with Zyvro AI. Powered by the LTX video generation API.</p>
+
+    <div class="builder">
+      <div class="planbar"><span id="planText">Free plan · 0/10 videos today</span><button class="pro-btn" id="proBtn">Go Pro · ₹299/30 days</button></div>
+      <div class="ad-slot" id="adSlot">Advertisement · Free users see ads here</div>
+      <div class="tabs">
+        <button class="tab active" data-mode="text">Text → Video</button>
+        <button class="tab" data-mode="image">Image → Video</button>
+      </div>
+
+      <textarea id="prompt" placeholder="Describe the video you want to create..."></textarea>
+
+      <div class="imagebox" id="imageBox">
+        <input id="imageInput" type="file" accept="image/png,image/jpeg,image/webp">
+      </div>
+
+      <div class="controls">
+        <div class="control"><label>Model</label><select id="model"><option value="ltx-2-3-fast">LTX 2.3 Fast</option><option value="ltx-2-3-pro">LTX 2.3 Pro</option></select></div>
+        <div class="control"><label>Duration</label><select id="duration"><option>6</option><option>8</option><option>10</option><option>12</option><option>14</option><option selected>15</option></select></div>
+        <div class="control"><label>Format</label><select id="resolution"><option value="720x1280" selected>📱 Portrait 9:16 — Shorts</option><option value="1280x720">🖥️ Landscape 16:9 — YouTube</option><option value="720x720">⬛ Square 1:1 — Social</option></select></div>
+      </div>
+
+      <div class="row">
+        <button class="generate" id="generateBtn">✨ Generate Video</button>
+      </div>
+      <div class="examples">
+        <button class="chip">A panda riding a bicycle in Tokyo</button>
+        <button class="chip">A cinematic sunset over mountains</button>
+        <button class="chip">A dog playing in the snow</button>
+      </div>
+      <div class="status" id="status"></div>
+      <div class="video-result" id="videoResult">
+        <video id="video" controls playsinline></video>
+        <a id="download" class="download" target="_blank" rel="noopener">Open / Download video</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-art">
+    <div class="sidecard one">Text or Image<br><b>→ Video</b></div>
+    <div class="preview"><div class="play">▶</div><small>AI preview</small></div>
+    <div class="sidecard two">⚡ Fast generation<br><span class="muted">LTX powered</span></div>
+  </div>
+</section>
+
+<section class="section">
+  <h2>Why Zyvro?</h2>
+  <p class="muted">A simple creator-first video generator.</p>
+  <div class="features">
+    <div class="feature"><b>⚡ Text → Video</b><p>Turn your words into an AI-generated video.</p></div>
+    <div class="feature"><b>🖼️ Image → Video</b><p>Animate a still image with AI motion.</p></div>
+    <div class="feature"><b>🎬 LTX Powered</b><p>Uses LTX's async generation workflow.</p></div>
+    <div class="feature"><b>📱 Android Ready</b><p>Responsive layout built for mobile screens.</p></div>
+  </div>
+</section>
+
+<section class="section" id="dashboard">
+  <h2>Your Zyvro dashboard</h2>
+  <p class="muted">Your plan, usage and latest activity at a glance.</p>
+  <div class="dashboard-grid">
+    <div class="dash-card"><h3 id="dashPlan">Free plan</h3><div class="dash-big" id="dashUsage">—</div><div class="mini" id="dashUsageText">Log in to see your daily usage.</div></div>
+    <div class="dash-card"><h3>Pro</h3><div class="dash-big">₹299</div><div class="mini">30 days · 30 videos/day · no ads</div><button class="pro-btn" style="margin-top:10px" onclick="goPro()">Upgrade</button></div>
+  </div>
+</section>
+
+<section class="section" id="examples">
+  <h2>Your Recent Generations</h2>
+  <p class="muted" id="historySubtitle">Log in to keep your generations linked to your Zyvro account.</p>
+  <div class="history-grid" id="history"></div>
+</section>
+
+<section class="section" id="pricing">
+  <div class="pro">
+    <h2>Go Pro</h2>
+    <p class="muted">Free: 10 videos on your first-login day, then 6 videos/day with ads. Pro: 30 videos/day with no ads. Pro access is 30 days per successful payment.</p>
+  </div>
+</section>
+
+<footer id="about">© 2026 Zyvro AI · Built for the Zyvro project</footer>
+</div>
+
+<div class="auth-modal" id="authModal"><div class="auth-card"><button class="auth-close" id="authClose">×</button><h3 id="authTitle">Create your account</h3><p id="authSubtitle">Save your Zyvro generations and access them from your account.</p><input id="authName" placeholder="Name" autocomplete="name"><input id="authEmail" type="email" placeholder="Email address" autocomplete="email"><input id="authPassword" type="password" placeholder="Password (6+ characters)" autocomplete="new-password"><div class="auth-error" id="authError"></div><div class="auth-actions"><button class="ghost" id="authCancel">Cancel</button><button class="primary" id="authSubmit">Create account</button></div><div class="auth-switch"><span id="authSwitchText">Already have an account?</span> <button id="authSwitch">Log in</button></div></div></div>
+<script>
+let mode = "text";
+const $ = id => document.getElementById(id);
+const statusEl = $("status");
+const resultEl = $("videoResult");
+const videoEl = $("video");
+const downloadEl = $("download");
+
+document.querySelectorAll(".tab").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".tab").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    mode = btn.dataset.mode;
+    $("imageBox").classList.toggle("show", mode === "image");
+  });
+});
+
+document.querySelectorAll(".chip").forEach(chip => {
+  chip.addEventListener("click", () => $("prompt").value = chip.textContent);
+});
+
+const savedTheme=localStorage.getItem("zyvro_theme");
+if(savedTheme==="light") document.body.dataset.light="1";
+$("themeBtn").textContent=document.body.dataset.light?"☀":"☾";
+$("themeBtn").addEventListener("click",()=>{const light=document.body.dataset.light!=="1";document.body.dataset.light=light?"1":"";localStorage.setItem("zyvro_theme",light?"light":"dark");$("themeBtn").textContent=light?"☀":"☾";});
+
+function setStatus(text, type="") {
+  statusEl.textContent = text;
+  statusEl.className = "status " + type;
+}
+
+async function loadHistory() {
+  try {
+    const me = await (await fetch("/api/auth/me")).json();
+    if (!me.user) { $("historySubtitle").textContent="Log in to keep your generations linked to your Zyvro account."; renderHistory([]); return; }
+    const d = await (await fetch("/api/history")).json();
+    $("historySubtitle").textContent="Your generations are saved to your Zyvro account.";
+    renderHistory(d.history || []);
+  } catch { renderHistory([]); }
+}
+function renderHistory(list) {
+  $("history").innerHTML = list.length ? list.map(x =>
+    `<div class="history"><div class="history-title">${escapeHtml(x.prompt)}</div><div class="history-meta">${x.mode === "image" ? "Image → Video" : "Text → Video"} · ${x.duration}s · ${x.resolution || ""} · ${new Date(x.time).toLocaleString()} · <a href="${escapeHtml(x.videoUrl || "#")}" target="_blank" rel="noopener">Open video</a></div></div>`
+  ).join("") : `<div class="history"><div class="history-title">No generations yet</div><div class="history-meta">Completed videos will appear here.</div></div>`;
+}
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+async function fileToDataUri(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+async function generate() {
+  const prompt = $("prompt").value.trim();
+  if (!prompt) return setStatus("Write a prompt first.", "bad");
+
+  let imageDataUri = "";
+  if (mode === "image") {
+    const file = $("imageInput").files[0];
+    if (!file) return setStatus("Choose an image first.", "bad");
+    if (file.size > 5 * 1024 * 1024) return setStatus("Please use an image under 5 MB.", "bad");
+    imageDataUri = await fileToDataUri(file);
+  }
+
+  $("generateBtn").disabled = true;
+  resultEl.classList.remove("show");
+  setStatus("Starting LTX generation…");
+
+  try {
+    const r = await fetch("/api/generate", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({
+        mode,
+        prompt,
+        model: $("model").value,
+        duration: Number($("duration").value),
+        resolution: $("resolution").value,
+        fps: 24,
+        imageDataUri
+      })
+    });
+
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || "Could not start generation.");
+
+    setStatus("LTX is generating your video… this can take a little while.");
+    await poll(data.mode, data.id, prompt);
+  } catch (e) {
+    setStatus(e.message, "bad");
+  } finally {
+    $("generateBtn").disabled = false;
+  }
+}
+
+async function poll(jobMode, id, prompt) {
+  for (let i = 0; i < 60; i++) {
+    await new Promise(r => setTimeout(r, 5000));
+    const r = await fetch(`/api/status/${jobMode}/${encodeURIComponent(id)}`);
+    const data = await r.json();
+
+    if (!r.ok) throw new Error(data.error || "Status check failed.");
+
+    if (data.status === "completed") {
+      const url = data.result?.video_url;
+      if (!url) throw new Error("LTX completed the job but returned no video URL.");
+
+      videoEl.src = url;
+      downloadEl.href = url;
+      resultEl.classList.add("show");
+      setStatus("Done! Your video is ready.", "good");
+      loadHistory();
+      loadAccount();
+      return;
+    }
+
+    if (data.status === "failed") {
+      throw new Error(data.error?.message || "LTX generation failed.");
+    }
+
+    setStatus(`Generating… ${data.status || "processing"}`);
+  }
+
+  throw new Error("Generation is taking longer than expected. Check your LTX dashboard/job status.");
+}
+
+
+let authMode="signup";
+function openAuth(m){authMode=m;$("authModal").classList.add("show");$("authTitle").textContent=m==="signup"?"Create your account":"Welcome back";$("authSubtitle").textContent=m==="signup"?"Save your Zyvro generations and access them from your account.":"Log in to continue with Zyvro.";$("authName").style.display=m==="signup"?"block":"none";$("authSubmit").textContent=m==="signup"?"Create account":"Log in";$("authSwitchText").textContent=m==="signup"?"Already have an account?":"New to Zyvro?";$("authSwitch").textContent=m==="signup"?"Log in":"Sign up";$("authError").textContent="";}
+function closeAuth(){$("authModal").classList.remove("show");}
+function updateAccount(u){const p=$("accountPill"), plan=$("planText"), ad=$("adSlot");if(u){p.textContent="👤 "+u.name;p.style.display="inline-block";$("loginBtn").textContent="Log out";$("signupBtn").style.display="none";const isPro=u.plan==="pro",limit=isPro?30:(u.dailyLimit||6),used=u.dailyUsed||0;plan.textContent=isPro?`Pro plan · ${used}/${limit} videos today`:`Free plan · ${used}/${limit} videos today`;ad.classList.toggle("show",!isPro);document.querySelector(".planbar").style.setProperty("--usage",Math.min(100,used/limit*100)+"%");$("dashPlan").textContent=isPro?"⭐ Pro plan":"Free plan";$("dashUsage").textContent=`${used}/${limit}`;$("dashUsageText").textContent=isPro?"videos used today · no ads":"videos used today · ads included";}else{p.style.display="none";$("loginBtn").textContent="Log in";$("signupBtn").style.display="inline-block";plan.textContent="Free plan · Log in to track your daily limit";ad.classList.remove("show");document.querySelector(".planbar").style.setProperty("--usage","0%");$("dashPlan").textContent="Free plan";$("dashUsage").textContent="—";$("dashUsageText").textContent="Log in to see your daily usage.";}}
+async function loadAccount(){try{const r=await fetch("/api/auth/me"),d=await r.json();updateAccount(d.user);}catch{}}
+$("loginBtn").addEventListener("click",async()=>{const d=await (await fetch("/api/auth/me")).json();if(d.user){await fetch("/api/auth/logout",{method:"POST"});updateAccount(null);loadHistory();setStatus("Logged out.");}else openAuth("login");});
+$("signupBtn").addEventListener("click",()=>openAuth("signup"));$("authClose").addEventListener("click",closeAuth);$("authCancel").addEventListener("click",closeAuth);$("authSwitch").addEventListener("click",()=>openAuth(authMode==="signup"?"login":"signup"));
+$("authSubmit").addEventListener("click",async()=>{const payload={name:$("authName").value.trim(),email:$("authEmail").value.trim(),password:$("authPassword").value};try{const r=await fetch(authMode==="signup"?"/api/auth/signup":"/api/auth/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)}),d=await r.json();if(!r.ok)throw new Error(d.error||"Authentication failed.");closeAuth();updateAccount(d.user);loadAccount();loadHistory();setStatus(authMode==="signup"?"Account created. You're logged in.":"Welcome back.","good");}catch(e){$("authError").textContent=e.message;}});loadAccount();
+
+async function goPro(){
+  const me=await (await fetch("/api/auth/me")).json();
+  if(!me.user){openAuth("login");return;}
+  if(me.user.plan==="pro"){setStatus("You already have Pro active.","good");return;}
+  try{
+    setStatus("Opening secure payment…");
+    const r=await fetch("/api/pro/create-order",{method:"POST",headers:{"Content-Type":"application/json"}});
+    const order=await r.json();
+    if(!r.ok)throw new Error(order.error||"Could not start payment.");
+    const options={key:order.keyId,amount:order.amount,currency:order.currency,name:"Zyvro AI",description:"Zyvro Pro · 30 days",order_id:order.orderId,handler:async function(resp){
+      const vr=await fetch("/api/pro/verify",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(resp)});
+      const vd=await vr.json();
+      if(!vr.ok)throw new Error(vd.error||"Payment verification failed.");
+      setStatus("Pro activated! 30 videos/day with no ads.","good");
+      loadAccount();
+    },prefill:{name:me.user.name,email:me.user.email},theme:{color:"#7c5cff"}};
+    if(!window.Razorpay)throw new Error("Payment checkout could not load. Check your internet connection.");
+    new Razorpay(options).open();
+  }catch(e){setStatus(e.message,"bad");}
+}
+$("proBtn").addEventListener("click",goPro);
+
+$("generateBtn").addEventListener("click", generate);
+loadHistory();
+</script>
+</body>
+</html>
